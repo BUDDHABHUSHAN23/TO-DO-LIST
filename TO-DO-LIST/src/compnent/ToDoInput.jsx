@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 
 export default function ToDoInput(props) {
-  const { handleTodoAdd } = props;
-  const [todoValue, setTodoValue] = useState('');
+  const { handleTodoAdd, todoValue, setTodoValue} = props;
+  
 
   return (
     <header>
@@ -17,8 +17,8 @@ export default function ToDoInput(props) {
         setTodoValue('');
         handleTodoAdd(todoValue);
 
-      }}>
-        Add
+      }}> 
+        Add   
       </button>
     </header>
   );

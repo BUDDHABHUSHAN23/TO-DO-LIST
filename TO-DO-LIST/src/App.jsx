@@ -1,5 +1,5 @@
 import React from 'react'
-import { useState } from 'react'
+import { useState , useEffect } from 'react'
 import ToDoCard from './compnent/ToDoCard'
 import ToDoInput from './compnent/ToDoInput'
 import ToDoList from './compnent/ToDoList'
@@ -14,28 +14,49 @@ function App() {
 
   const [todos, setTodos] = useState([
   ]);
+  const [todoValue, setTodoValue] = useState('');
 
-  function handleTodoAdd(newTodo) {
-    const newTodosList = setTodos([...todos, newTodo]);
-    setTodos = {newTodosList};
+  function persistData(newList) {
+    localStorage.setItem('todos', JSON.stringify({ todos: newList }))
   }
+function handleTodoAdd(newTodo) {
+  const newTodosList = [...todos, newTodo];
+  setTodos(newTodosList);
+  persistData(newTodosList);
+}
 
-  function handleDeleteTodo(index){
-    const newTodosList = todos.filter((todo, todoIndex) => {
-      return todoIndex !== index;  // this allows to stay in the array 
-    })
-    setTodos(newTodosList)
-  }
+function handleDeleteTodo(index) {
+  const newTodosList = todos.filter((_, todoIndex) => todoIndex !== index);
+  setTodos(newTodosList);
+  persistData(newTodosList);
+}
 
+function handleEditTodo(index) {
+  const valueToBeChanged = todos[index];
+  setTodoValue(valueToBeChanged);
+  handleDeleteTodo(index); // This already persists
+}
 
-  function handleEditTodo(index){
+    useEffect(() => {
+    if (!localStorage) {
+      return
+    }
 
-  }
+    let localTodos = localStorage.getItem('todos')
+    if (!localTodos) {
+      return
+    }
+
+    console.log(localTodos)
+    localTodos = JSON.parse(localTodos).todos
+    setTodos(localTodos)
+
+  }, [])
 
   return (
     <>
-      <ToDoInput handleTodoAdd ={handleTodoAdd} />
-      <ToDoList handleDeleteTodo={handleDeleteTodo} todos={todos} />  
+      <ToDoInput todoValue={todoValue} setTodoValue={setTodoValue} handleTodoAdd ={handleTodoAdd} />
+      <ToDoList handleDeleteTodo={handleDeleteTodo} todos={todos} handleEditTodo={handleEditTodo}/>  
     </>
   )
 }
